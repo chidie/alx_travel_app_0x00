@@ -65,3 +65,10 @@
     docker compose down --remove-orphans # remove orphaned containers
     docker compose build --no-cache # If dockerfile is changed, rebuild without cache
 ```
+
+
+> Note: When AUTH_USER_MODEL points at your listings.User, Django will treat that model as the project user model (so you won't have both auth.User and listings.User active for authentication). That removes the duplicate reverse accessors that caused the SystemCheckError.
+```bash
+# Keyerror: listings.User.user_permissions: (fields.E304) Reverse accessor 'Permission.user_set' for 'listings.User.user_permissions' clashes with reverse accessor for 'auth.User.user_permissions'.
+#         HINT: Add or change a related_name argument to the definition for 'listings.User.user_permissions' or 'auth.User.user_permissions'.
+```

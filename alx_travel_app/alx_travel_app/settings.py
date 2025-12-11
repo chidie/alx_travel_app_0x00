@@ -51,6 +51,9 @@ INSTALLED_APPS = [
     'listings',
 ]
 
+# Use the custom user model defined in the `listings` app
+AUTH_USER_MODEL = 'listings.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
