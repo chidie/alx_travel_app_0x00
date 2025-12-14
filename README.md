@@ -1,3 +1,100 @@
+# alx_travel_app
+
+A Django + Django REST Framework project containerized with Docker, designed to manage travel listings, bookings, and reviews. Includes a custom user model with role-based access (`guest`, `host`, `admin`).
+
+---
+
+## Features
+- Custom `User` model with roles (`guest`, `host`, `admin`)
+- Models for `Listing`, `Booking`, and `Review`
+- REST API endpoints with DRF viewsets
+- PostgreSQL database + Redis for background tasks
+- Dockerized setup with `docker-compose`
+- Django Admin interface for managing data
+- Seed script for populating sample data
+
+---
+
+## Tech Stack
+- **Backend**: Django 5, Django REST Framework
+- **Database**: PostgreSQL 15 (alpine)
+- **Cache/Queue**: Redis 7
+- **Containerization**: Docker, Docker Compose
+- **Language**: Python 3.11 (alpine)
+
+---
+
+## Project Structure
+```bash
+    alx_travel_app/ 
+    │ ├── alx_travel_app/ # Django project root 
+    │ ├── settings.py 
+    │ ├── urls.py 
+    │ └── manage.py 
+    │ ├── listings/ # Listings app 
+    │ ├── models.py # User, Listing, Booking, Review 
+    │ ├── serializers.py # DRF serializers 
+    │ ├── views.py # DRF viewsets 
+    │ ├── admin.py # Admin registration 
+    │ └── management/commands/seed.py # Seed script 
+    │ ├── Dockerfile 
+    ├── docker-compose.yml 
+    └── requirements.txt
+```
+
+
+---
+
+## ⚙️ Setup
+
+### 1. Clone and build
+```bash
+git clone <repo-url>
+cd alx_travel_app
+docker compose up --build
+
+```bash
+    docker compose exec app python manage.py makemigrations
+    docker compose exec app python manage.py migrate
+
+    docker compose exec app python manage.py createsuperuser
+    docker compose exec app python manage.py seed
+
+```
+
+🧑Models
+```bash
+    User
+    user_id (UUID, PK)
+    first_name, last_name, email (unique)
+    role (guest, host, admin)
+    created_at
+    Listing
+    listing_id (UUID, PK)
+    user (FK → User)
+    title, description, price, location
+    created_at
+
+    Booking
+    booking_id (UUID, PK)
+    listing (FK → Listing)
+    user (FK → User)
+    status (pending, confirmed, canceled)
+    start_date, end_date, total_price
+    created_at
+
+    Review
+    review_id (UUID, PK)
+    listing (FK → Listing)
+    user (FK → User)
+    rating (1–5)
+    comment
+    created_at
+```
+To seed:
+```bash
+    docker compose exec app python manage.py seed
+```
 ### Create the project & virtualenv (why: isolation, reproducibility)
 ```bash
    mkdir alx_travel_app && cd alx_travel_app
