@@ -1,80 +1,76 @@
+# listings/management/commands/seed.py
+import uuid
 from django.core.management.base import BaseCommand
-from django.utils import timezone
-from listings.models import User, Listing, Booking, Review
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth import get_user_model
+from listings.models import Listing, Booking, Review
+from datetime import date, timedelta
+
+User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Seed the database with sample listings, bookings, and reviews'
+    help = "Seed database with sample users, listings, bookings, and reviews"
 
     def handle(self, *args, **kwargs):
-        # optional to remove existing data
-        User.objects.all().delete()
-        Listing.objects.all().delete()  
-        Booking.objects.all().delete()
-        Review.objects.all().delete()
+        # Create users
+        guest = User.objects.create_user(
+            username="guestuser",
+            email="guest@example.com",
+            first_name="Guest",
+            last_name="User",
+            role="guest",
+            password="guest123"
+        )
 
-        # Create sample users
         host = User.objects.create_user(
-            email="host@example.com"
             username="hostuser",
+            email="host@example.com",
             first_name="Host",
             last_name="User",
             role="host",
-            password="password123"
+            password="host123"
         )
-        guest = User.objects.create_user(
-            email="guest@example.com"
-            username="guestuser",
-            first_name="Guest", 
+
+        admin = User.objects.create_superuser(
+            username="adminuser",
+            email="admin@example.com",
+            first_name="Admin",
             last_name="User",
-            role="guest",
-            password="password123"
+            role="admin",
+            password="admin123"
+        )
+        
+        # Create listings
+        apt = Listing.objects.create(
+            user=host,
+            title="Cozy Apartment",
+            description="2 bedroom flat in city center",
+            price=75.00,
+            location="Kaiserslautern"
+        )
+        villa = Listing.objects.create(
+            user=host,
+            title="Luxury Villa",
+            description="Spacious villa with pool",
+            price=250.00,
+            location="Berlin"
         )
 
-        # Listings
-        listing1 = Listing.objects.create(
-            user=host,
-            title="Cozy Cottage",
-            description="A cozy cottage in the countryside.",
-            price=100.00,
-            location="Countryside"
-        )
-        listing2 = Listing.objects.create(
-            user=host,
-            title="Modern Apartment",
-            description="A modern apartment in the city center.",
-            price=150.00,
-            location="City Center"
-        )
-
-        # Bookings
-        booking1 = Booking.objects.create(
-            listing=listing1,
+        # Create bookings
+        Booking.objects.create(
+            listing=apt,
             user=guest,
             status="confirmed",
-            start_date=timezone.now().date(),
-            end_date=timezone.now().date() + timezone.timedelta(days=3),
-            total_price=300.00
+            start_date=date.today(),
+            end_date=date.today() + timedelta(days=3),
+            total_price=225.00
         )
-        booking2 = Booking.objects.create(
-            listing=listing2,
-            user=guest,
-            status="pending",
-            start_date=timezone.now().date() + timezone.timedelta(days=5),
-            end_date=timezone.now().date() + timezone.timedelta(days=8),
-            total_price=450.00
-        )
-        # Reviews
-        review1 = Review.objects.create(
-            listing=listing1,
+
+        # Create reviews
+        Review.objects.create(
+            listing=apt,
             user=guest,
             rating=5,
-            comment="Amazing stay! Highly recommend."
+            comment="Amazing stay, highly recommend!"
         )
-        review2 = Review.objects.create(
-            listing=listing2,
-            user=guest,
-            rating=4,
-            comment="Great location, but a bit noisy."
-        )
-        self.stdout.write(self.style.SUCCESS('Database seeded successfully.'))
+
+        self.stdout.write(self.style.SUCCESS("Database seeded successfully!"))
