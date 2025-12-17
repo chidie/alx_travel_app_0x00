@@ -16,8 +16,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.contrib.auth import views as auth_views
 from rest_framework.routers import DefaultRouter
 from listings.views import UserViewSet, ListingViewSet, BookingViewSet, ReviewViewSet
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -27,5 +33,9 @@ router.register(r'reviews', ReviewViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/', include(router.urls)),
+    # path('api-auth/', include('rest_framework.urls')), # Uncomment if you want to use browsable API login/logout
+    path('listings/', include('listings.urls')),    # include listings app URLs
 ]

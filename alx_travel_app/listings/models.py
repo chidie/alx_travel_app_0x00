@@ -1,11 +1,12 @@
 # listings/models.py
 import uuid
 from django.db import models
+from .managers import CustomUserManager
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     # Override default fields to enforce constraints
     first_name = models.CharField(max_length=150, null=False, blank=False)
@@ -27,6 +28,8 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
+
+    objects = CustomUserManager()
 
     def __str__(self):
         return f"{self.email} ({self.role})"

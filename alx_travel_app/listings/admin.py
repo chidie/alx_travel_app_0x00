@@ -1,6 +1,14 @@
-# listings/admin.py
 from django.contrib import admin
-from .models import Listing, Booking, Review
+from .models import Listing, Booking, Review, User
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    model = User
+    list_display = ("email", "first_name", "last_name", "role", "is_staff", "is_superuser", "is_active", "created_at")
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Permissions", {"fields": ("is_staff", "is_superuser", "is_active", "groups", "user_permissions")}),
+    )
 
 @admin.register(Listing)
 class ListingAdmin(admin.ModelAdmin):
